@@ -1,0 +1,41 @@
+version: "3.9"
+services:
+  backend:
+    image: errors-tracer-backend
+    container_name: backend
+    ports:
+      - "4973:4973"
+    environment:
+      NODE_ENV: production
+    restart: unless-stopped
+    networks:
+      - app-network
+
+  frontend:
+    image: errors-tracer-dashboard
+    container_name: dashboard
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - app-network
+
+  database:
+    image: postgres
+    container_name: database
+    environment:
+      POSTGRES_PASSWORD: #database_password
+    ports:
+      - "5431:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+
+networks:
+  app-network:
+    driver: bridge
